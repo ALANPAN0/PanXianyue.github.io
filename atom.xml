@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-06-22T07:30:02.000Z</updated>
+  <updated>2018-06-22T07:58:13.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -20,9 +20,10 @@
     <link href="http://yoursite.com/2018/06/22/412-advanced-debugging-with-xcode-and-lldb/"/>
     <id>http://yoursite.com/2018/06/22/412-advanced-debugging-with-xcode-and-lldb/</id>
     <published>2018-06-22T07:26:12.000Z</published>
-    <updated>2018-06-22T07:30:02.000Z</updated>
+    <updated>2018-06-22T07:58:13.000Z</updated>
     
-    <content type="html">&lt;h3 id=&quot;Swift_Debugging_Reliability&quot;&gt;&lt;a href=&quot;#Swift_Debugging_Reliability&quot; class=&quot;headerlink&quot; title=&quot;Swift Debugging Reliability&quot;&gt;&lt;/a&gt;Swift Debugging Reliability&lt;/h3&gt;&lt;ul&gt;
+    <content type="html">&lt;p&gt;Session 412&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Swift_Debugging_Reliability&quot;&gt;&lt;a href=&quot;#Swift_Debugging_Reliability&quot; class=&quot;headerlink&quot; title=&quot;Swift Debugging Reliability&quot;&gt;&lt;/a&gt;Swift Debugging Reliability&lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;“Failed to get module from AST context”&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;img src=&quot;/images/15295497017890.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
@@ -113,103 +114,11 @@
 &lt;li&gt;Named colors and NSAppearance details in inspector&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&quot;More_Information&quot;&gt;&lt;a href=&quot;#More_Information&quot; class=&quot;headerlink&quot; title=&quot;More Information&quot;&gt;&lt;/a&gt;More Information&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/wwdc18/412&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://developer.apple.com/wwdc18/412&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Session 412&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;h3 id=&quot;Swift_Debugging_Reliability&quot;&gt;&lt;a href=&quot;#Swift_Debugging_Reliability&quot; class=&quot;headerlink&quot; title=&quot;Swift Debugging Reliability&quot;&gt;&lt;/a&gt;Swift Debugging Reliability&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;“Failed to get module from AST context”&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295497017890.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Swift Type Resolution&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295501452601.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;Advanced_Debugging_Tips_and_Tricks&quot;&gt;&lt;a href=&quot;#Advanced_Debugging_Tips_and_Tricks&quot; class=&quot;headerlink&quot; title=&quot;Advanced Debugging Tips and Tricks&quot;&gt;&lt;/a&gt;Advanced Debugging Tips and Tricks&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;Configure behaviors to dedicate a tab for debugging&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295506731448.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;LLDB expressions can modify program state&lt;/li&gt;
-&lt;li&gt;Use auto-continuing breakpoints with debugger commands to inject code live&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295694361889.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Create dependent breakpoints using “breakpoint set –one-shot true”&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295701755619.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;“po $arg1” ($arg2, etc) in assembly frames to print function arguments&lt;br&gt;&lt;img src=&quot;/images/15295696579538.jpg&quot; alt=&quot;&quot;&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295698536326.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Skip lines of code by dragging Instruction Pointer or “thread jump –by 1” &lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-164917@2x.png&quot; alt=&quot;QQ20180621-164917@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295726476119.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Pause when variables are modified by using watchpoints&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-172506@2x.png&quot; alt=&quot;QQ20180621-172506@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-172633@2x.png&quot; alt=&quot;QQ20180621-172633@2x&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Evaluate Obj-C code in Swift frames with “expression -l objc -O – &lt;expr&gt;”&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-173209@2x.png&quot; alt=&quot;QQ20180621-173209@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295736874414.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-173654@2x.png&quot; alt=&quot;QQ20180621-173654@2x&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Flush view changes to the screen using “expression CATransaction.flush()”&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-174039@2x.png&quot; alt=&quot;QQ20180621-174039@2x&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;Add custom LLDB commands using aliases and scripts. Alias examples:&lt;/p&gt;
-&lt;p&gt;  &lt;code&gt;command alias poc expression -l objc -O --&lt;/code&gt;&lt;br&gt;  &lt;code&gt;command alias 🚽 expression -l objc -- (void)[CATransaction flush]&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-174324@2x.png&quot; alt=&quot;QQ20180621-174324@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180621-174439@2x.png&quot; alt=&quot;QQ20180621-174439@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15295745542569.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;View_Debugging_Tips&quot;&gt;&lt;a href=&quot;#View_Debugging_Tips&quot; class=&quot;headerlink&quot; title=&quot;View Debugging Tips&quot;&gt;&lt;/a&gt;View Debugging Tips&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;Reveal in Debug Navigator&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296489063252.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296490976830.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Auto Layout debugging&lt;br&gt;&lt;img src=&quot;/images/15296492114731.jpg&quot; alt=&quot;&quot;&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296494979872.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;View clipped content&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296496689816.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296497100300.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Access object pointers (copy casted expressions)&lt;br&gt;&lt;img src=&quot;/images/15296497915091.jpg&quot; alt=&quot;&quot;&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296499661595.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Creation backtraces in the inspector&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296519891986.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180622-144735@2x.png&quot; alt=&quot;QQ20180622-144735@2x&quot;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;/images/QQ20180622-144817@2x.png&quot; alt=&quot;QQ20180622-144817@2x&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Debug description in the inspector&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296515396997.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;⌘-click-through for selection &lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&quot;/images/15296512007334.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;Debugging_Dark_Mode&quot;&gt;&lt;a href=&quot;#Debugging_Dark_Mode&quot; class=&quot;headerlink&quot; title=&quot;Debugging Dark Mode&quot;&gt;&lt;/a&gt;Debugging Dark Mode&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;Appearance overrides&lt;/li&gt;
-&lt;li&gt;Capturing active Mac apps&lt;/li&gt;
-&lt;li&gt;Named colors and NSAppearance details in inspector&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&quot;More_Information&quot;&gt;&lt;a href=&quot;#More_Information&quot; class=&quot;headerlink&quot; title=&quot;More Information&quot;&gt;&lt;/a&gt;More Information&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/wwdc18/412&quot;&gt;https://developer.apple.com/wwdc18/412&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Session 412&lt;br&gt;
+      &lt;p&gt;Session 412&lt;br&gt;
     
     </summary>
     

@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 412_advanced_debugging_with_xcode_and_lldb · dreamerpanda</title><meta name="description" content="412_advanced_debugging_with_xcode_and_lldb - panda"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="dreamerpanda"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/sunchongsheng" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/pinggod" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">412_advanced_debugging_with_xcode_and_lldb</h1><div class="post-info">Jun 22, 2018</div><div class="post-content"><p>Session 412<br><a id="more"></a></p>
+<h3 id="Swift_Debugging_Reliability"><a href="#Swift_Debugging_Reliability" class="headerlink" title="Swift Debugging Reliability"></a>Swift Debugging Reliability</h3><ul>
+<li>“Failed to get module from AST context”</li>
+</ul>
+<p><img src="/images/15295497017890.jpg" alt=""></p>
+<ul>
+<li>Swift Type Resolution</li>
+</ul>
+<p><img src="/images/15295501452601.jpg" alt=""></p>
+<h3 id="Advanced_Debugging_Tips_and_Tricks"><a href="#Advanced_Debugging_Tips_and_Tricks" class="headerlink" title="Advanced Debugging Tips and Tricks"></a>Advanced Debugging Tips and Tricks</h3><ul>
+<li>Configure behaviors to dedicate a tab for debugging</li>
+</ul>
+<p><img src="/images/15295506731448.jpg" alt=""></p>
+<ul>
+<li>LLDB expressions can modify program state</li>
+<li>Use auto-continuing breakpoints with debugger commands to inject code live</li>
+</ul>
+<p><img src="/images/15295694361889.jpg" alt=""></p>
+<ul>
+<li>Create dependent breakpoints using “breakpoint set –one-shot true”</li>
+</ul>
+<p><img src="/images/15295701755619.jpg" alt=""></p>
+<ul>
+<li>“po $arg1” ($arg2, etc) in assembly frames to print function arguments<br><img src="/images/15295696579538.jpg" alt=""></li>
+</ul>
+<p><img src="/images/15295698536326.jpg" alt=""></p>
+<ul>
+<li>Skip lines of code by dragging Instruction Pointer or “thread jump –by 1” </li>
+</ul>
+<p><img src="/images/QQ20180621-164917@2x.png" alt="QQ20180621-164917@2x"></p>
+<p><img src="/images/15295726476119.jpg" alt=""></p>
+<ul>
+<li>Pause when variables are modified by using watchpoints</li>
+</ul>
+<p><img src="/images/QQ20180621-172506@2x.png" alt="QQ20180621-172506@2x"></p>
+<p><img src="/images/QQ20180621-172633@2x.png" alt="QQ20180621-172633@2x"></p>
+<ul>
+<li>Evaluate Obj-C code in Swift frames with “expression -l objc -O – <expr>”</expr></li>
+</ul>
+<p><img src="/images/QQ20180621-173209@2x.png" alt="QQ20180621-173209@2x"></p>
+<p><img src="/images/15295736874414.jpg" alt=""></p>
+<p><img src="/images/QQ20180621-173654@2x.png" alt="QQ20180621-173654@2x"></p>
+<ul>
+<li>Flush view changes to the screen using “expression CATransaction.flush()”</li>
+</ul>
+<p><img src="/images/QQ20180621-174039@2x.png" alt="QQ20180621-174039@2x"></p>
+<ul>
+<li><p>Add custom LLDB commands using aliases and scripts. Alias examples:</p>
+<p>  <code>command alias poc expression -l objc -O --</code><br>  <code>command alias 🚽 expression -l objc -- (void)[CATransaction flush]</code></p>
+</li>
+</ul>
+<p><img src="/images/QQ20180621-174324@2x.png" alt="QQ20180621-174324@2x"></p>
+<p><img src="/images/QQ20180621-174439@2x.png" alt="QQ20180621-174439@2x"></p>
+<p><img src="/images/15295745542569.jpg" alt=""></p>
+<h3 id="View_Debugging_Tips"><a href="#View_Debugging_Tips" class="headerlink" title="View Debugging Tips"></a>View Debugging Tips</h3><ul>
+<li>Reveal in Debug Navigator</li>
+</ul>
+<p><img src="/images/15296489063252.jpg" alt=""></p>
+<p><img src="/images/15296490976830.jpg" alt=""></p>
+<ul>
+<li>Auto Layout debugging<br><img src="/images/15296492114731.jpg" alt=""></li>
+</ul>
+<p><img src="/images/15296494979872.jpg" alt=""></p>
+<ul>
+<li>View clipped content</li>
+</ul>
+<p><img src="/images/15296496689816.jpg" alt=""></p>
+<p><img src="/images/15296497100300.jpg" alt=""></p>
+<ul>
+<li>Access object pointers (copy casted expressions)<br><img src="/images/15296497915091.jpg" alt=""></li>
+</ul>
+<p><img src="/images/15296499661595.jpg" alt=""></p>
+<ul>
+<li>Creation backtraces in the inspector</li>
+</ul>
+<p><img src="/images/15296519891986.jpg" alt=""></p>
+<p><img src="/images/QQ20180622-144735@2x.png" alt="QQ20180622-144735@2x"></p>
+<p><img src="/images/QQ20180622-144817@2x.png" alt="QQ20180622-144817@2x"></p>
+<ul>
+<li>Debug description in the inspector</li>
+</ul>
+<p><img src="/images/15296515396997.jpg" alt=""></p>
+<ul>
+<li>⌘-click-through for selection </li>
+</ul>
+<p><img src="/images/15296512007334.jpg" alt=""></p>
+<h3 id="Debugging_Dark_Mode"><a href="#Debugging_Dark_Mode" class="headerlink" title="Debugging Dark Mode"></a>Debugging Dark Mode</h3><ul>
+<li>Appearance overrides</li>
+<li>Capturing active Mac apps</li>
+<li>Named colors and NSAppearance details in inspector</li>
+</ul>
+<h3 id="More_Information"><a href="#More_Information" class="headerlink" title="More Information"></a>More Information</h3><p><a href="https://developer.apple.com/wwdc18/412" target="_blank" rel="external">https://developer.apple.com/wwdc18/412</a></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/06/17/408-building-faster-in-xcode/" class="next">NEXT</a></div><div class="copyright"><p>© 2015 - 2018 <a href="http://yoursite.com">panda</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
