@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2018/06/26/410-creating-custom-instruments/</loc>
+    
+    <lastmod>2018-06-26T02:42:21.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2018/06/26/415-behind-the-scenes-of-the-xcode-build-process/</loc>
     
     <lastmod>2018-06-26T02:19:45.000Z</lastmod>
@@ -23,14 +30,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2016/05/11/Runtime-tabBarItem/</loc>
-    
-    <lastmod>2018-06-22T07:25:27.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/01/03/alfred-use/</loc>
+    <loc>http://yoursite.com/2016/01/12/RSA-SHA/</loc>
     
     <lastmod>2018-06-22T07:25:27.000Z</lastmod>
     
@@ -58,14 +58,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2016/02/13/xctool-package/</loc>
+    <loc>http://yoursite.com/2016/05/11/Runtime-tabBarItem/</loc>
     
     <lastmod>2018-06-22T07:25:27.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2016/01/12/RSA-SHA/</loc>
+    <loc>http://yoursite.com/2016/02/13/xctool-package/</loc>
     
     <lastmod>2018-06-22T07:25:27.000Z</lastmod>
     
@@ -87,6 +87,13 @@
   
   <url>
     <loc>http://yoursite.com/2017/02/25/git-commands/</loc>
+    
+    <lastmod>2018-06-22T07:25:27.000Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2017/01/03/alfred-use/</loc>
     
     <lastmod>2018-06-22T07:25:27.000Z</lastmod>
     

@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-06-26T02:19:45.000Z</updated>
+  <updated>2018-06-26T02:42:21.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -14,6 +14,58 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Creating Custom Instruments</title>
+    <link href="http://yoursite.com/2018/06/26/410-creating-custom-instruments/"/>
+    <id>http://yoursite.com/2018/06/26/410-creating-custom-instruments/</id>
+    <published>2018-06-26T02:37:41.000Z</published>
+    <updated>2018-06-26T02:42:21.000Z</updated>
+    
+    <content type="html">&lt;p&gt;session 410&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Instruments 是一款强大且灵活的性能分析工具，集成在 Xcode 的开发者工具集中&lt;br&gt;我们能够用不同的 Instrument 来分析测试各种各样的性能问题&lt;br&gt;比如 Leaks 来查内存泄漏问题，Time Profiler 来分析 App 的页面卡顿问题等等&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;u4E3A_u4EC0_u4E48_u8981_u521B_u5EFA_u81EA_u5B9A_u4E49_u7684_u5DE5_u5177__3F&quot;&gt;&lt;a href=&quot;#u4E3A_u4EC0_u4E48_u8981_u521B_u5EFA_u81EA_u5B9A_u4E49_u7684_u5DE5_u5177__3F&quot; class=&quot;headerlink&quot; title=&quot;为什么要创建自定义的工具 ?&quot;&gt;&lt;/a&gt;为什么要创建自定义的工具 ?&lt;/h3&gt;&lt;p&gt;系统已经自带了大量的工具, 这些工具苹果已经通过文档模板 创建好并集成在 Instruments 的启动选择界面里&lt;br&gt;比如上文中提到的 Leaks 和 Time Profiler 相信很多人都有使用过&lt;/p&gt;
+&lt;p&gt;Instruments 10 的启动界面:&lt;br&gt;&lt;img src=&quot;/images/15299175880026.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;但是这些内置工具的使用其实很大程度上是基于我们对自己代码的充分了解，那么如何让不懂这部分代码的人也能够很快了解 App 的运行数据呢&lt;br&gt;比如测试 App 的网络层性能数据？&lt;br&gt;这时候，一个良好的 Instruments 自定义工具或许就是那个答案，它能够出色地描述 App 运行情况。&lt;br&gt;另外，如果想为内置的 Instruments 工具换个界面，或者系统提供的工具不够用了，这些问题也能够通过创建自定义 Instruments 工具来得到解决。&lt;/p&gt;
+&lt;h3 id=&quot;Instruments_10__u7684_u67B6_u6784_u4F53_u7CFB&quot;&gt;&lt;a href=&quot;#Instruments_10__u7684_u67B6_u6784_u4F53_u7CFB&quot; class=&quot;headerlink&quot; title=&quot;Instruments 10 的架构体系&quot;&gt;&lt;/a&gt;Instruments 10 的架构体系&lt;/h3&gt;&lt;p&gt;介绍 Instrument 10 的架构之前，我们先回顾下以往苹果是怎么维护 Instruments 组件的&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299178011209.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;最早一个版本的 Instruments 拖拽不同的 Library 到 Instruments 点击 Record 的后便可以执行一系列的性能工具，但这些基础库并没有提供良好的方式来继续更新维护。&lt;br&gt;早期苹果通过继承现有的工具完成迭代，但每个工具都有自己的数据记录和分析模式，他们不得不设计一个自定义的存储机制来获取追踪到的数据，然后再设计一个自定义的界面来整合其他新增的应用。&lt;br&gt;这种方式随着不断地迭代，维护成本越来越高，每添加一个新的功能，就必须要修改之前最原始的那几个工具库，这样在旧的架构上完成自定义 Instrument 的将会变得极其痛苦，最终苹果放弃了旧的架构，从而也才有了现在的 Instruments 10。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299179601287.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;全新的 Instruments 架构分为 『标准界面（Standard UI）』 和 『分析核心（Analysis Core）』 两个标准组件，二者分工不同但却紧密连接&lt;br&gt;『标准界面』组件负责用户交互，而『分析核心』负责数据存储和统计分析。现在 Instruments 10 中的工具库已经都是基于这个所创建，我们甚至完全可以自己基于这两个标准组件做一个与苹果内置工具一模一样的东西&lt;/p&gt;
+&lt;h3 id=&quot;u754C_u9762_u4ECB_u7ECD&quot;&gt;&lt;a href=&quot;#u754C_u9762_u4ECB_u7ECD&quot; class=&quot;headerlink&quot; title=&quot;界面介绍&quot;&gt;&lt;/a&gt;界面介绍&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;/images/15299183312590.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;从上图可以看出，Instruments 10 的界面变化并不大，与以往的版本结构差不多。&lt;br&gt;但正如前面提到的，架构变化使得现在的界面数据都将由『分析核心』提供，我们有必要来了解下其数据结构是怎么设计的。&lt;br&gt;下图就是一张数据表的格式。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299184203962.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;『分析核心』以表的形式将数据传递给『标准界面』，而这些表可以通过一个简单的 Table Schema 定义。Table Schema 就和我们 OC 或者 Swift 中的类一样，描述了这个 Table 是什么。&lt;br&gt;也正是出于这种设计，我们接下来才能够使用 Table Schema 来完成自定义 Instrument 的创建。&lt;/p&gt;
+&lt;h3 id=&quot;Instruments__u81EA_u5B9A_u4E49_u5DE5_u5177_u7684_u521D_u7EA7_u3001_u4E2D_u7EA7_u4EE5_u53CA_u9AD8_u7EA7_u5E94_u7528&quot;&gt;&lt;a href=&quot;#Instruments__u81EA_u5B9A_u4E49_u5DE5_u5177_u7684_u521D_u7EA7_u3001_u4E2D_u7EA7_u4EE5_u53CA_u9AD8_u7EA7_u5E94_u7528&quot; class=&quot;headerlink&quot; title=&quot;Instruments 自定义工具的初级、中级以及高级应用&quot;&gt;&lt;/a&gt;Instruments 自定义工具的初级、中级以及高级应用&lt;/h3&gt;&lt;h6 id=&quot;u521D_u7EA7_u5E94_u7528&quot;&gt;&lt;a href=&quot;#u521D_u7EA7_u5E94_u7528&quot; class=&quot;headerlink&quot; title=&quot;初级应用&quot;&gt;&lt;/a&gt;初级应用&lt;/h6&gt;&lt;p&gt;有了足够的理论知识后，我们可以尝试下简单的自定义工具创建了。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299185368021.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Instruments 10 创建自定义工具和创建工程的步骤几乎一样，只是最后 Project 模板需要切换到 macOS 栏下，选择 Instruments Package，并填写好工程名等信息即可。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299185915929.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;工程创建完成后，在左侧导航中已经自动生成了一个后缀为 .instrpkg 的 XML 文件，所有的配置都会在这个 XML 文件中完成，其中默认已经帮我生成了包含一些基础信息。接着我们要做的就是按照我们的需要去写这个配置文档了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;导入需要使用的 Schema&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#60;!-- MARK: &amp;#23548;&amp;#20837;&amp;#20320;&amp;#38656;&amp;#35201;&amp;#20351;&amp;#29992;&amp;#30340; schema --&amp;#62;&amp;#10;&amp;#60;import-schema&amp;#62;tick&amp;#60;/import-schema&amp;#62;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;完成 Instrument 的『标准界面』和『分析核心』配置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#60;!-- MARK: &amp;#23548;&amp;#20837;&amp;#20320;&amp;#38656;&amp;#35201;&amp;#20351;&amp;#29992;&amp;#30340; schema --&amp;#62;&amp;#10;    &amp;#60;import-schema&amp;#62;tick&amp;#60;/import-schema&amp;#62;&amp;#10;    &amp;#60;instrument&amp;#62;&amp;#10;        &amp;#60;!-- MARK: &amp;#36825;&amp;#20010; Instrument &amp;#30340;&amp;#22522;&amp;#26412;&amp;#20449;&amp;#24687; --&amp;#62;&amp;#10;        &amp;#60;id&amp;#62;com.Parsifal.TicksDemo&amp;#60;/id&amp;#62;&amp;#10;        &amp;#60;title&amp;#62;Ticks&amp;#60;/title&amp;#62;&amp;#10;        &amp;#60;category&amp;#62;Behavior&amp;#60;/category&amp;#62;&amp;#10;        &amp;#60;purpose&amp;#62;Instrument drawing ticks every 100ms&amp;#60;/purpose&amp;#62;&amp;#10;        &amp;#60;icon&amp;#62;Generic&amp;#60;/icon&amp;#62;&amp;#10;        &amp;#10;        &amp;#60;!-- MARK: &amp;#25551;&amp;#36848;&amp;#30340;&amp;#34920;&amp;#25968;&amp;#25454;&amp;#65292;&amp;#23558;&amp;#20250;&amp;#30001; &amp;#20998;&amp;#26512;&amp;#26680;&amp;#24515; &amp;#26368;&amp;#32456;&amp;#23436;&amp;#25104;&amp;#23384;&amp;#20648;&amp;#21644;&amp;#35299;&amp;#26512;&amp;#25552;&amp;#20379;&amp;#32473; &amp;#26631;&amp;#20934;&amp;#30028;&amp;#38754; &amp;#27169;&amp;#22359; --&amp;#62;&amp;#10;        &amp;#60;create-table&amp;#62;&amp;#10;            &amp;#60;id&amp;#62;tick-table&amp;#60;/id&amp;#62;&amp;#10;            &amp;#60;!-- &amp;#23450;&amp;#20041;&amp;#20102;&amp;#27599;&amp;#21015;&amp;#30340;&amp;#25968;&amp;#25454; --&amp;#62;&amp;#10;            &amp;#60;schema-ref&amp;#62;tick&amp;#60;/schema-ref&amp;#62;&amp;#10;        &amp;#60;/create-table&amp;#62;&amp;#10;        &amp;#10;        &amp;#60;!-- MARK: &amp;#22270;&amp;#24418;&amp;#35270;&amp;#22270;&amp;#19978;&amp;#38754;&amp;#23637;&amp;#31034;&amp;#65288;&amp;#21487;&amp;#36873;&amp;#65289; --&amp;#62;&amp;#10;        &amp;#60;graph&amp;#62;&amp;#10;            &amp;#60;title&amp;#62;Ticks&amp;#60;/title&amp;#62;&amp;#10;            &amp;#60;lane&amp;#62;&amp;#10;                &amp;#60;title&amp;#62;Lane&amp;#60;/title&amp;#62;&amp;#10;                &amp;#60;!-- &amp;#36825;&amp;#37324;&amp;#23601;&amp;#26159;&amp;#19978;&amp;#38754;&amp;#20320;&amp;#23450;&amp;#20041;&amp;#30340; table id--&amp;#62;&amp;#10;                &amp;#60;table-ref&amp;#62;tick-table&amp;#60;/table-ref&amp;#62;&amp;#10;                &amp;#60;plot&amp;#62;&amp;#10;                    &amp;#60;value-from&amp;#62;time&amp;#60;/value-from&amp;#62;&amp;#10;                &amp;#60;/plot&amp;#62;&amp;#10;            &amp;#60;/lane&amp;#62;&amp;#10;        &amp;#60;/graph&amp;#62;&amp;#10;        &amp;#10;        &amp;#60;!-- MARK: &amp;#36825;&amp;#37324;&amp;#25551;&amp;#36848;&amp;#20320;&amp;#38656;&amp;#35201;&amp;#23637;&amp;#31034;&amp;#22312;&amp;#35814;&amp;#24773;&amp;#35270;&amp;#22270;&amp;#30340;&amp;#25968;&amp;#25454; --&amp;#62;&amp;#10;        &amp;#60;list&amp;#62;&amp;#10;            &amp;#60;title&amp;#62;Ticks&amp;#60;/title&amp;#62;&amp;#10;            &amp;#60;!-- &amp;#36825;&amp;#37324;&amp;#23601;&amp;#26159;&amp;#19978;&amp;#38754;&amp;#20320;&amp;#23450;&amp;#20041;&amp;#30340; table id--&amp;#62;&amp;#10;            &amp;#60;table-ref&amp;#62;tick-table&amp;#60;/table-ref&amp;#62;&amp;#10;            &amp;#60;column&amp;#62;time&amp;#60;/column&amp;#62;&amp;#10;        &amp;#60;/list&amp;#62;&amp;#10;    &amp;#60;/instrument&amp;#62;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;至此我们便已经完成了所有的编码工作了&lt;br&gt;编译运行后，在弹出的 Instruments 选择窗口里选择 Blank 就可以在测试界面的 Library 中发现我们自己定义的工具了，直接拖入 Instruments 里就能够像使用其他内置工具一样运行&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299191086255.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u603B_u7ED3&quot;&gt;&lt;a href=&quot;#u603B_u7ED3&quot; class=&quot;headerlink&quot; title=&quot;总结&quot;&gt;&lt;/a&gt;总结&lt;/h3&gt;&lt;p&gt;Instruments 10 提供了太多创建自定义 Instrument 的可能性了，不过这同样需要我们花点时间来学习掌握新一套的编写方式。对于大多数客户端开发者来说，或许并不会用到上面谈的这部分技能，但对于测试团队来说，这无疑为 iOS App 的性能测试又打开了一扇窗。相信在未来的一年里，圈子内会陆陆续续地有高质量自定义 Instrument 的产出，让我们一起期待。&lt;/p&gt;
+&lt;h3 id=&quot;More_Information&quot;&gt;&lt;a href=&quot;#More_Information&quot; class=&quot;headerlink&quot; title=&quot;More Information&quot;&gt;&lt;/a&gt;More Information&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/wwdc18/410&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://developer.apple.com/wwdc18/410&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;session 410&lt;/p&gt;
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Behind the Scenes of the Xcode Build Process</title>
