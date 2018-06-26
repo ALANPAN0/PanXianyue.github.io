@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2018-06-22T07:58:13.000Z</updated>
+  <updated>2018-06-26T02:19:45.000Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -16,11 +16,197 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>412_advanced_debugging_with_xcode_and_lldb</title>
+    <title>Behind the Scenes of the Xcode Build Process</title>
+    <link href="http://yoursite.com/2018/06/26/415-behind-the-scenes-of-the-xcode-build-process/"/>
+    <id>http://yoursite.com/2018/06/26/415-behind-the-scenes-of-the-xcode-build-process/</id>
+    <published>2018-06-26T02:05:56.000Z</published>
+    <updated>2018-06-26T02:19:45.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Session 412&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;有没有想过在 Xcode 中构建项目会发生什么? 了解 Xcode 如何自动执行构建应用程序所需的步骤, 学习 clang \ swiftc \ the linker 如何协同工作将源代码转化为程序.&lt;/p&gt;
+&lt;h3 id=&quot;u63A2_u7D22_Xcode__u7F16_u8BD1_u8FC7_u7A0B&quot;&gt;&lt;a href=&quot;#u63A2_u7D22_Xcode__u7F16_u8BD1_u8FC7_u7A0B&quot; class=&quot;headerlink&quot; title=&quot;探索 Xcode 编译过程&quot;&gt;&lt;/a&gt;探索 Xcode 编译过程&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&amp;#25353;&amp;#19979; command + b &amp;#20570;&amp;#20102;&amp;#20160;&amp;#20040;?&amp;#10;&amp;#32534;&amp;#35793;&amp;#36807;&amp;#31243;&amp;#22914;&amp;#20309;&amp;#26500;&amp;#25104;&amp;#30340;?&amp;#10;Xcode &amp;#22914;&amp;#20309;&amp;#36816;&amp;#29992;&amp;#39033;&amp;#30446;&amp;#25991;&amp;#20214;&amp;#30340;&amp;#20449;&amp;#24687;&amp;#21435;&amp;#20915;&amp;#23450;&amp;#27169;&amp;#25311;&amp;#21644;&amp;#23433;&amp;#25490;&amp;#32534;&amp;#35793;&amp;#36807;&amp;#31243;?&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299290244315.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;当你编译 APP 时,&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;编译和链接源代码&lt;/li&gt;
+&lt;li&gt;复制, 处理资源. 像 header \ asset catalogues \ storyboards&lt;/li&gt;
+&lt;li&gt;最终签名或者做一些自定义的工作, 像 &lt;code&gt;shell script&lt;/code&gt;, &lt;code&gt;code linting&lt;/code&gt;, &lt;code&gt;validation tools&lt;/code&gt;等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以上编译过程中大多数的任务可以通过运行命令行工具, 像 Clang, LD, AC tool, IB tool, Code sign 等&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299290411519.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u7F16_u8BD1_u81EA_u52A8_u6267_u884C_u4E00_u7CFB_u5217_u4EFB_u52A1&quot;&gt;&lt;a href=&quot;#u7F16_u8BD1_u81EA_u52A8_u6267_u884C_u4E00_u7CFB_u5217_u4EFB_u52A1&quot; class=&quot;headerlink&quot; title=&quot;编译自动执行一系列任务&quot;&gt;&lt;/a&gt;编译自动执行一系列任务&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;/images/15299290552267.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299290670538.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u7F16_u8BD1_u4EFB_u52A1_u7684_u6267_u884C_u987A_u5E8F&quot;&gt;&lt;a href=&quot;#u7F16_u8BD1_u4EFB_u52A1_u7684_u6267_u884C_u987A_u5E8F&quot; class=&quot;headerlink&quot; title=&quot;编译任务的执行顺序&quot;&gt;&lt;/a&gt;编译任务的执行顺序&lt;/h3&gt;&lt;p&gt;&lt;img src=&quot;/images/15299291881932.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;输入和输出&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299291992139.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;编译: .m 文件 为输入, .o 文件为编译后的输出&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292116413.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;链接: .o 文件作为输入&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292228969.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;依赖关系&lt;/p&gt;
+&lt;h3 id=&quot;u5F53_u4F60_u6309_u4E0B_u7F16_u8BD1_u7684_u65F6_u5019_u505A_u4E86_u4EC0_u4E48_3F&quot;&gt;&lt;a href=&quot;#u5F53_u4F60_u6309_u4E0B_u7F16_u8BD1_u7684_u65F6_u5019_u505A_u4E86_u4EC0_u4E48_3F&quot; class=&quot;headerlink&quot; title=&quot;当你按下编译的时候做了什么?&quot;&gt;&lt;/a&gt;当你按下编译的时候做了什么?&lt;/h3&gt;&lt;p&gt;首先建立编译前的描述, 解析 project file , 考虑项目文件, 目标文件, 依赖关系, 编译设置&lt;/p&gt;
+&lt;p&gt;构建过程表示为定向图如下:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292336540.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;分析文件的依赖关系, 决定哪些是可以并行执行的, 并去编译&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292439725.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u53D1_u73B0_u76F8_u5173_u6027&quot;&gt;&lt;a href=&quot;#u53D1_u73B0_u76F8_u5173_u6027&quot; class=&quot;headerlink&quot; title=&quot;发现相关性&quot;&gt;&lt;/a&gt;发现相关性&lt;/h3&gt;&lt;p&gt;我们实际中并没有太多相关的依赖信息, 编译系统实际上在任务的执行期间发现更多的依赖&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292554507.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;正常编译如我们所期望会生成 &lt;code&gt;.o&lt;/code&gt; 文件, 同样也会生成  &lt;code&gt;.d&lt;/code&gt; 文件 , 表示包含哪些头文件.&lt;br&gt;当你下次编译时, 编译系统会使用该文件的信息去确保重现编译源文件, 如果你改变了其中它包含的头文件, 你可以看到依赖通过 &lt;code&gt;PetController.h&lt;/code&gt; -&amp;gt; &lt;code&gt;PetController.d&lt;/code&gt;  -&amp;gt; &lt;code&gt;.m&lt;/code&gt; -&amp;gt; &lt;code&gt;.o&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u589E_u91CF_u7F16_u8BD1&quot;&gt;&lt;a href=&quot;#u589E_u91CF_u7F16_u8BD1&quot; class=&quot;headerlink&quot; title=&quot;增量编译&quot;&gt;&lt;/a&gt;增量编译&lt;/h3&gt;&lt;p&gt;当你的项目比较大的时候, 编译会进行一个很长的过程, 所以你不想每次编译都运行所有的任务, 相反, 编译系统仅仅会执行一些任务的子集, 例如:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292687731.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;u66F4_u6539_u68C0_u6D4B_u548C_u4EFB_u52A1_u7B7E_u540D&quot;&gt;&lt;a href=&quot;#u66F4_u6539_u68C0_u6D4B_u548C_u4EFB_u52A1_u7B7E_u540D&quot; class=&quot;headerlink&quot; title=&quot;更改检测和任务签名&quot;&gt;&lt;/a&gt;更改检测和任务签名&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;构建图中的每个任务都有一个签名&lt;/li&gt;
+&lt;li&gt;根据输入和其他任务元数据的统计信息进行计算&lt;/li&gt;
+&lt;li&gt;构建系统跟踪当前构建和以前构建的任务签名&lt;/li&gt;
+&lt;li&gt;比较以确定是否应该运行任务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;u4F60_u5982_u4F55_u5E2E_u52A9_u7F16_u8BD1_u7CFB_u7EDF_uFF1F&quot;&gt;&lt;a href=&quot;#u4F60_u5982_u4F55_u5E2E_u52A9_u7F16_u8BD1_u7CFB_u7EDF_uFF1F&quot; class=&quot;headerlink&quot; title=&quot;你如何帮助编译系统？&quot;&gt;&lt;/a&gt;你如何帮助编译系统？&lt;/h3&gt;&lt;p&gt;我们不需要考虑任务的执行顺序, 这个是系统的工作&lt;br&gt;作为开发者需要根据任务依赖性进行思考, 让编译系统计算出如何最好的执行他们根据结构, 这个让编译系统正确的排序同时利用多核的优势并行的去执行&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292812529.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299292946282.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h6 id=&quot;u4F9D_u8D56_u6765_u81EA_u54EA_u91CC_uFF1F&quot;&gt;&lt;a href=&quot;#u4F9D_u8D56_u6765_u81EA_u54EA_u91CC_uFF1F&quot; class=&quot;headerlink&quot; title=&quot;依赖来自哪里？&quot;&gt;&lt;/a&gt;依赖来自哪里？&lt;/h6&gt;&lt;ul&gt;
+&lt;li&gt;内置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293070504.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;目标依赖关系&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293175118.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;隐式依赖性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293379257.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;构建阶段依赖关系&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293514138.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;计划顺序依赖关系&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293641412.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h6 id=&quot;u4F60_u8981_u505A_u7684&quot;&gt;&lt;a href=&quot;#u4F60_u8981_u505A_u7684&quot; class=&quot;headerlink&quot; title=&quot;你要做的&quot;&gt;&lt;/a&gt;你要做的&lt;/h6&gt;&lt;ul&gt;
+&lt;li&gt;声明输入和输出(帮助系统不必要的编译, 确保正确的顺序)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299293932754.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;避免项目相关性自动链接&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299294041985.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;添加显式依赖关系&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299294155650.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;创建工作区和项目引用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299294388063.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;小结&lt;br&gt;精确的依赖信息, 编译系统能够更好的并行去编译, 保证每一次的结果都是始终如一的, 因此你可以话更少的时间去编译, 更多的时间去开发&lt;/p&gt;
+&lt;h3 id=&quot;Xcode_u80CC_u540E_u7684_u573A_u666F_u2022_u6784_u5EFA_u8FC7_u7A0B_uFF1AClang_u6784_u5EFA&quot;&gt;&lt;a href=&quot;#Xcode_u80CC_u540E_u7684_u573A_u666F_u2022_u6784_u5EFA_u8FC7_u7A0B_uFF1AClang_u6784_u5EFA&quot; class=&quot;headerlink&quot; title=&quot;Xcode背后的场景•构建过程：Clang构建&quot;&gt;&lt;/a&gt;Xcode背后的场景•构建过程：Clang构建&lt;/h3&gt;&lt;p&gt;两点:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;header maps&lt;/code&gt;, 如何使用它去交流信息从编译系统到 Clang 编辑器&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;clang modules&lt;/code&gt;, 如何使用它去加速你的编译&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h6 id=&quot;Clang_u662F_u4EC0_u4E48_uFF1F&quot;&gt;&lt;a href=&quot;#Clang_u662F_u4EC0_u4E48_uFF1F&quot; class=&quot;headerlink&quot; title=&quot;Clang是什么？&quot;&gt;&lt;/a&gt;Clang是什么？&lt;/h6&gt;&lt;p&gt;苹果官方编译器针对C语言家族&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;C&lt;/li&gt;
+&lt;li&gt;C ++ &lt;/li&gt;
+&lt;li&gt;Objective-C &lt;/li&gt;
+&lt;li&gt;Objective-C ++&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h6 id=&quot;u4F20_u7EDF_u7684C_u8BED_u8A00_u7F16_u8BD1&quot;&gt;&lt;a href=&quot;#u4F20_u7EDF_u7684C_u8BED_u8A00_u7F16_u8BD1&quot; class=&quot;headerlink&quot; title=&quot;传统的C语言编译&quot;&gt;&lt;/a&gt;传统的C语言编译&lt;/h6&gt;&lt;p&gt;&lt;img src=&quot;/images/15299294496048.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h6 id=&quot;Clang__u662F_u5982_u4F55_u627E_u5230_u5934_u6587_u4EF6_u7684_3F&quot;&gt;&lt;a href=&quot;#Clang__u662F_u5982_u4F55_u627E_u5230_u5934_u6587_u4EF6_u7684_3F&quot; class=&quot;headerlink&quot; title=&quot;Clang 是如何找到头文件的?&quot;&gt;&lt;/a&gt;Clang 是如何找到头文件的?&lt;/h6&gt;&lt;p&gt;Header Map&lt;/p&gt;
+&lt;h6 id=&quot;u4EC0_u4E48_u662F_Header_Maps_3F&quot;&gt;&lt;a href=&quot;#u4EC0_u4E48_u662F_Header_Maps_3F&quot; class=&quot;headerlink&quot; title=&quot;什么是 Header Maps?&quot;&gt;&lt;/a&gt;什么是 Header Maps?&lt;/h6&gt;&lt;p&gt;&lt;img src=&quot;/images/15299294580098.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h6 id=&quot;Header_Maps__u7684_u95EE_u9898&quot;&gt;&lt;a href=&quot;#Header_Maps__u7684_u95EE_u9898&quot; class=&quot;headerlink&quot; title=&quot;Header Maps 的问题&quot;&gt;&lt;/a&gt;Header Maps 的问题&lt;/h6&gt;&lt;ul&gt;
+&lt;li&gt;标题不是该项目的一部分&lt;/li&gt;
+&lt;li&gt;相同名称的标题互相影响&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h6 id=&quot;Clang_Modules&quot;&gt;&lt;a href=&quot;#Clang_Modules&quot; class=&quot;headerlink&quot; title=&quot;Clang Modules&quot;&gt;&lt;/a&gt;Clang Modules&lt;/h6&gt;&lt;ul&gt;
+&lt;li&gt;磁盘上缓存的标题表示&lt;/li&gt;
+&lt;li&gt;可重复使用&lt;/li&gt;
+&lt;li&gt;更快的构建时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;查找和解析头文件仅仅一次, 储存这些信息在磁盘中, 以便被重复使用, 这样可以提高编译时间&lt;/p&gt;
+&lt;h6 id=&quot;u6F5C_u5728_u7684_u6A21_u5757_u9677_u9631&quot;&gt;&lt;a href=&quot;#u6F5C_u5728_u7684_u6A21_u5757_u9677_u9631&quot; class=&quot;headerlink&quot; title=&quot;潜在的模块陷阱&quot;&gt;&lt;/a&gt;潜在的模块陷阱&lt;/h6&gt;&lt;p&gt;&lt;img src=&quot;/images/15299294689577.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299294765101.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;我们知道他们是同一个 framework, 同样 Clang 能计算出来, 因为你没有指定 framework 的名字, 可能你会得到冲突定义错误, 因为你导入同样的头文件两次 (没有 context 时; 有 context 时, 首先会忽略 context, 我们会观察 &lt;code&gt;cat.h&lt;/code&gt; 文件的改变, 所以我们得不到冲突定义 ). Clang 幕后工作非常的辛苦修复这样的问题, 并不能修复所有这样的问题, 所以我们要明确的指定 framework 名字.&lt;/p&gt;
+&lt;h3 id=&quot;u94FE_u63A5_u5668__28The_Linker_29&quot;&gt;&lt;a href=&quot;#u94FE_u63A5_u5668__28The_Linker_29&quot; class=&quot;headerlink&quot; title=&quot;链接器 (The Linker)&quot;&gt;&lt;/a&gt;链接器 (The Linker)&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;构建可执行Mach-O的最终任务&lt;/li&gt;
+&lt;li&gt;将所有编译器调用的输出合并到一个文件中&lt;ul&gt;
+&lt;li&gt;移动和修补编译器生成的代码&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;采取两种输入文件&lt;ul&gt;
+&lt;li&gt;目标文件（.o）&lt;/li&gt;
+&lt;li&gt;库（.dylib，.tbd，.a）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;u7B26_u53F7__28Symbols_29&quot;&gt;&lt;a href=&quot;#u7B26_u53F7__28Symbols_29&quot; class=&quot;headerlink&quot; title=&quot;符号 (Symbols)&quot;&gt;&lt;/a&gt;符号 (Symbols)&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;符号是代码或数据片段的名称&lt;/li&gt;
+&lt;li&gt;代码片段可能会引用其他符号&lt;/li&gt;
+&lt;li&gt;符号可以具有改变链接器行为的属性&lt;ul&gt;
+&lt;li&gt;弱符号&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;语言通常会将数据编码为符号，使其“符号化”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;u5BF9_u8C61_u6587_u4EF6__28Object_Files_29&quot;&gt;&lt;a href=&quot;#u5BF9_u8C61_u6587_u4EF6__28Object_Files_29&quot; class=&quot;headerlink&quot; title=&quot;对象文件 (Object Files)&quot;&gt;&lt;/a&gt;对象文件 (Object Files)&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;单个编译器操作的输出&lt;/li&gt;
+&lt;li&gt;包含代码和数据片段的不可执行的Mach-O文件&lt;ul&gt;
+&lt;li&gt;每个片段由一个符号表示&lt;/li&gt;
+&lt;li&gt;片段可能引用“未定义”的符号&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;u5E93__28Libraries_29&quot;&gt;&lt;a href=&quot;#u5E93__28Libraries_29&quot; class=&quot;headerlink&quot; title=&quot;库 (Libraries)&quot;&gt;&lt;/a&gt;库 (Libraries)&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;库定义了不作为目标的一部分构建的符号&lt;/li&gt;
+&lt;li&gt;Dylibs：动态库&lt;ul&gt;
+&lt;li&gt;提供可执行文件可以使用的代码和数据片段的Mach-O文件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;TBDs：基于文本的动态库&lt;ul&gt;
+&lt;li&gt;只包含符号&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;静态存档&lt;ul&gt;
+&lt;li&gt;使用“ar”工具构建的多个.o文件的存档&lt;/li&gt;
+&lt;li&gt;只有您引用的符号的.o文件才会包含在您的应用中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h6 id=&quot;u4F8B_u5B50&quot;&gt;&lt;a href=&quot;#u4F8B_u5B50&quot; class=&quot;headerlink&quot; title=&quot;例子&quot;&gt;&lt;/a&gt;例子&lt;/h6&gt;&lt;p&gt;&lt;img src=&quot;/images/15299294866696.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/15299294973521.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;.o&lt;/code&gt; 字符串被拷贝到 &lt;code&gt;.o&lt;/code&gt; 文件中, 之所以没有名字, 是因为它是静态变量&lt;/li&gt;
+&lt;li&gt;我们看到有两个变量被传到方法中, 两个地址表示开始和结束位置&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;__Z9playSoundPKc&lt;/code&gt; 表示 方法签名&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;.o&lt;/code&gt; 文件作为 Linker 的输入, Linker 将输出一个文件去放它们 (PetKit)&lt;/li&gt;
+&lt;li&gt;数据段 __TEXT: 一部分是可执行代码, 一部分是字符串&lt;/li&gt;
+&lt;li&gt;知道 &lt;code&gt;.o&lt;/code&gt; 文件的地址, 所以我们可以去重写它&lt;/li&gt;
+&lt;li&gt;看下静态方法的实现, 有两个 &lt;code&gt;.o&lt;/code&gt; 文件, 将他放入文件中, 第二个没有引用它, 所以不会放入&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;__open$stub&lt;/code&gt; 拷贝的 &lt;code&gt;__open&lt;/code&gt;, 此文件在系统库的TBD文件中&lt;/li&gt;
+&lt;li&gt;系统库我们是不能拷贝到程序中的, 我们需要放足够的信息以至于能够调用到它&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;__DATA&lt;/code&gt; 全局变量, &lt;code&gt;__open$stub&lt;/code&gt; 偏移量为 0 , 设置为 NULL 时, 将会 crash&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;__LINKEDIT&lt;/code&gt; 元数据, 为操作系统留下信息在运行时去修复它&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;More_Information&quot;&gt;&lt;a href=&quot;#More_Information&quot; class=&quot;headerlink&quot; title=&quot;More Information&quot;&gt;&lt;/a&gt;More Information&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/wwdc18/415&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://developer.apple.com/wwdc18/415&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Session 412&lt;/p&gt;
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Advanced debugging with xcode and lldb</title>
     <link href="http://yoursite.com/2018/06/22/412-advanced-debugging-with-xcode-and-lldb/"/>
     <id>http://yoursite.com/2018/06/22/412-advanced-debugging-with-xcode-and-lldb/</id>
     <published>2018-06-22T07:26:12.000Z</published>
-    <updated>2018-06-22T07:58:13.000Z</updated>
+    <updated>2018-06-26T02:12:24.000Z</updated>
     
     <content type="html">&lt;p&gt;Session 412&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;h3 id=&quot;Swift_Debugging_Reliability&quot;&gt;&lt;a href=&quot;#Swift_Debugging_Reliability&quot; class=&quot;headerlink&quot; title=&quot;Swift Debugging Reliability&quot;&gt;&lt;/a&gt;Swift Debugging Reliability&lt;/h3&gt;&lt;ul&gt;
@@ -132,7 +318,7 @@
     <link href="http://yoursite.com/2018/06/17/408-building-faster-in-xcode/"/>
     <id>http://yoursite.com/2018/06/17/408-building-faster-in-xcode/</id>
     <published>2018-06-17T12:09:54.000Z</published>
-    <updated>2018-06-22T07:25:27.000Z</updated>
+    <updated>2018-06-26T02:16:40.000Z</updated>
     
     <content type="html">&lt;p&gt;Session 408&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/Building%20Faster%20in%20Xcode_.png&quot; alt=&quot;Building Faster in Xcode_&quot;&gt;&lt;/p&gt;

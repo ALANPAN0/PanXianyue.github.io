@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> Behind the Scenes of the Xcode Build Process · dreamerpanda</title><meta name="description" content="Behind the Scenes of the Xcode Build Process - panda"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="http://yoursite.com/atom.xml" title="dreamerpanda"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">BLOG</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">ARCHIVE</a></li><li class="nav-list-item"><a href="http://weibo.com/sunchongsheng" target="_blank" class="nav-list-link">WEIBO</a></li><li class="nav-list-item"><a href="https://github.com/pinggod" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">Behind the Scenes of the Xcode Build Process</h1><div class="post-info">Jun 26, 2018</div><div class="post-content"><p>Session 412</p>
+<a id="more"></a>
+<p>有没有想过在 Xcode 中构建项目会发生什么? 了解 Xcode 如何自动执行构建应用程序所需的步骤, 学习 clang \ swiftc \ the linker 如何协同工作将源代码转化为程序.</p>
+<h3 id="u63A2_u7D22_Xcode__u7F16_u8BD1_u8FC7_u7A0B"><a href="#u63A2_u7D22_Xcode__u7F16_u8BD1_u8FC7_u7A0B" class="headerlink" title="探索 Xcode 编译过程"></a>探索 Xcode 编译过程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#25353;&#19979; command + b &#20570;&#20102;&#20160;&#20040;?&#10;&#32534;&#35793;&#36807;&#31243;&#22914;&#20309;&#26500;&#25104;&#30340;?&#10;Xcode &#22914;&#20309;&#36816;&#29992;&#39033;&#30446;&#25991;&#20214;&#30340;&#20449;&#24687;&#21435;&#20915;&#23450;&#27169;&#25311;&#21644;&#23433;&#25490;&#32534;&#35793;&#36807;&#31243;?</span><br></pre></td></tr></table></figure>
+<p><img src="/images/15299290244315.jpg" alt=""></p>
+<p>当你编译 APP 时,</p>
+<ol>
+<li>编译和链接源代码</li>
+<li>复制, 处理资源. 像 header \ asset catalogues \ storyboards</li>
+<li>最终签名或者做一些自定义的工作, 像 <code>shell script</code>, <code>code linting</code>, <code>validation tools</code>等</li>
+</ol>
+<p>以上编译过程中大多数的任务可以通过运行命令行工具, 像 Clang, LD, AC tool, IB tool, Code sign 等</p>
+<p><img src="/images/15299290411519.jpg" alt=""></p>
+<h3 id="u7F16_u8BD1_u81EA_u52A8_u6267_u884C_u4E00_u7CFB_u5217_u4EFB_u52A1"><a href="#u7F16_u8BD1_u81EA_u52A8_u6267_u884C_u4E00_u7CFB_u5217_u4EFB_u52A1" class="headerlink" title="编译自动执行一系列任务"></a>编译自动执行一系列任务</h3><p><img src="/images/15299290552267.jpg" alt=""></p>
+<p><img src="/images/15299290670538.jpg" alt=""></p>
+<h3 id="u7F16_u8BD1_u4EFB_u52A1_u7684_u6267_u884C_u987A_u5E8F"><a href="#u7F16_u8BD1_u4EFB_u52A1_u7684_u6267_u884C_u987A_u5E8F" class="headerlink" title="编译任务的执行顺序"></a>编译任务的执行顺序</h3><p><img src="/images/15299291881932.jpg" alt=""></p>
+<p>输入和输出</p>
+<p><img src="/images/15299291992139.jpg" alt=""></p>
+<p>编译: .m 文件 为输入, .o 文件为编译后的输出</p>
+<p><img src="/images/15299292116413.jpg" alt=""></p>
+<p>链接: .o 文件作为输入</p>
+<p><img src="/images/15299292228969.jpg" alt=""></p>
+<p>依赖关系</p>
+<h3 id="u5F53_u4F60_u6309_u4E0B_u7F16_u8BD1_u7684_u65F6_u5019_u505A_u4E86_u4EC0_u4E48_3F"><a href="#u5F53_u4F60_u6309_u4E0B_u7F16_u8BD1_u7684_u65F6_u5019_u505A_u4E86_u4EC0_u4E48_3F" class="headerlink" title="当你按下编译的时候做了什么?"></a>当你按下编译的时候做了什么?</h3><p>首先建立编译前的描述, 解析 project file , 考虑项目文件, 目标文件, 依赖关系, 编译设置</p>
+<p>构建过程表示为定向图如下:</p>
+<p><img src="/images/15299292336540.jpg" alt=""></p>
+<p>分析文件的依赖关系, 决定哪些是可以并行执行的, 并去编译</p>
+<p><img src="/images/15299292439725.jpg" alt=""></p>
+<h3 id="u53D1_u73B0_u76F8_u5173_u6027"><a href="#u53D1_u73B0_u76F8_u5173_u6027" class="headerlink" title="发现相关性"></a>发现相关性</h3><p>我们实际中并没有太多相关的依赖信息, 编译系统实际上在任务的执行期间发现更多的依赖</p>
+<p><img src="/images/15299292554507.jpg" alt=""></p>
+<p>正常编译如我们所期望会生成 <code>.o</code> 文件, 同样也会生成  <code>.d</code> 文件 , 表示包含哪些头文件.<br>当你下次编译时, 编译系统会使用该文件的信息去确保重现编译源文件, 如果你改变了其中它包含的头文件, 你可以看到依赖通过 <code>PetController.h</code> -&gt; <code>PetController.d</code>  -&gt; <code>.m</code> -&gt; <code>.o</code></p>
+<h3 id="u589E_u91CF_u7F16_u8BD1"><a href="#u589E_u91CF_u7F16_u8BD1" class="headerlink" title="增量编译"></a>增量编译</h3><p>当你的项目比较大的时候, 编译会进行一个很长的过程, 所以你不想每次编译都运行所有的任务, 相反, 编译系统仅仅会执行一些任务的子集, 例如:</p>
+<p><img src="/images/15299292687731.jpg" alt=""></p>
+<h3 id="u66F4_u6539_u68C0_u6D4B_u548C_u4EFB_u52A1_u7B7E_u540D"><a href="#u66F4_u6539_u68C0_u6D4B_u548C_u4EFB_u52A1_u7B7E_u540D" class="headerlink" title="更改检测和任务签名"></a>更改检测和任务签名</h3><ul>
+<li>构建图中的每个任务都有一个签名</li>
+<li>根据输入和其他任务元数据的统计信息进行计算</li>
+<li>构建系统跟踪当前构建和以前构建的任务签名</li>
+<li>比较以确定是否应该运行任务</li>
+</ul>
+<h3 id="u4F60_u5982_u4F55_u5E2E_u52A9_u7F16_u8BD1_u7CFB_u7EDF_uFF1F"><a href="#u4F60_u5982_u4F55_u5E2E_u52A9_u7F16_u8BD1_u7CFB_u7EDF_uFF1F" class="headerlink" title="你如何帮助编译系统？"></a>你如何帮助编译系统？</h3><p>我们不需要考虑任务的执行顺序, 这个是系统的工作<br>作为开发者需要根据任务依赖性进行思考, 让编译系统计算出如何最好的执行他们根据结构, 这个让编译系统正确的排序同时利用多核的优势并行的去执行</p>
+<p><img src="/images/15299292812529.jpg" alt=""></p>
+<p><img src="/images/15299292946282.jpg" alt=""></p>
+<h6 id="u4F9D_u8D56_u6765_u81EA_u54EA_u91CC_uFF1F"><a href="#u4F9D_u8D56_u6765_u81EA_u54EA_u91CC_uFF1F" class="headerlink" title="依赖来自哪里？"></a>依赖来自哪里？</h6><ul>
+<li>内置</li>
+</ul>
+<p><img src="/images/15299293070504.jpg" alt=""></p>
+<ul>
+<li>目标依赖关系</li>
+</ul>
+<p><img src="/images/15299293175118.jpg" alt=""></p>
+<ul>
+<li>隐式依赖性</li>
+</ul>
+<p><img src="/images/15299293379257.jpg" alt=""></p>
+<ul>
+<li>构建阶段依赖关系</li>
+</ul>
+<p><img src="/images/15299293514138.jpg" alt=""></p>
+<ul>
+<li>计划顺序依赖关系</li>
+</ul>
+<p><img src="/images/15299293641412.jpg" alt=""></p>
+<h6 id="u4F60_u8981_u505A_u7684"><a href="#u4F60_u8981_u505A_u7684" class="headerlink" title="你要做的"></a>你要做的</h6><ul>
+<li>声明输入和输出(帮助系统不必要的编译, 确保正确的顺序)</li>
+</ul>
+<p><img src="/images/15299293932754.jpg" alt=""></p>
+<ul>
+<li>避免项目相关性自动链接</li>
+</ul>
+<p><img src="/images/15299294041985.jpg" alt=""></p>
+<ul>
+<li>添加显式依赖关系</li>
+</ul>
+<p><img src="/images/15299294155650.jpg" alt=""></p>
+<ul>
+<li>创建工作区和项目引用</li>
+</ul>
+<p><img src="/images/15299294388063.jpg" alt=""></p>
+<p>小结<br>精确的依赖信息, 编译系统能够更好的并行去编译, 保证每一次的结果都是始终如一的, 因此你可以话更少的时间去编译, 更多的时间去开发</p>
+<h3 id="Xcode_u80CC_u540E_u7684_u573A_u666F_u2022_u6784_u5EFA_u8FC7_u7A0B_uFF1AClang_u6784_u5EFA"><a href="#Xcode_u80CC_u540E_u7684_u573A_u666F_u2022_u6784_u5EFA_u8FC7_u7A0B_uFF1AClang_u6784_u5EFA" class="headerlink" title="Xcode背后的场景•构建过程：Clang构建"></a>Xcode背后的场景•构建过程：Clang构建</h3><p>两点:</p>
+<ul>
+<li><code>header maps</code>, 如何使用它去交流信息从编译系统到 Clang 编辑器</li>
+<li><code>clang modules</code>, 如何使用它去加速你的编译</li>
+</ul>
+<h6 id="Clang_u662F_u4EC0_u4E48_uFF1F"><a href="#Clang_u662F_u4EC0_u4E48_uFF1F" class="headerlink" title="Clang是什么？"></a>Clang是什么？</h6><p>苹果官方编译器针对C语言家族</p>
+<ul>
+<li>C</li>
+<li>C ++ </li>
+<li>Objective-C </li>
+<li>Objective-C ++</li>
+</ul>
+<h6 id="u4F20_u7EDF_u7684C_u8BED_u8A00_u7F16_u8BD1"><a href="#u4F20_u7EDF_u7684C_u8BED_u8A00_u7F16_u8BD1" class="headerlink" title="传统的C语言编译"></a>传统的C语言编译</h6><p><img src="/images/15299294496048.jpg" alt=""></p>
+<h6 id="Clang__u662F_u5982_u4F55_u627E_u5230_u5934_u6587_u4EF6_u7684_3F"><a href="#Clang__u662F_u5982_u4F55_u627E_u5230_u5934_u6587_u4EF6_u7684_3F" class="headerlink" title="Clang 是如何找到头文件的?"></a>Clang 是如何找到头文件的?</h6><p>Header Map</p>
+<h6 id="u4EC0_u4E48_u662F_Header_Maps_3F"><a href="#u4EC0_u4E48_u662F_Header_Maps_3F" class="headerlink" title="什么是 Header Maps?"></a>什么是 Header Maps?</h6><p><img src="/images/15299294580098.jpg" alt=""></p>
+<h6 id="Header_Maps__u7684_u95EE_u9898"><a href="#Header_Maps__u7684_u95EE_u9898" class="headerlink" title="Header Maps 的问题"></a>Header Maps 的问题</h6><ul>
+<li>标题不是该项目的一部分</li>
+<li>相同名称的标题互相影响</li>
+</ul>
+<h6 id="Clang_Modules"><a href="#Clang_Modules" class="headerlink" title="Clang Modules"></a>Clang Modules</h6><ul>
+<li>磁盘上缓存的标题表示</li>
+<li>可重复使用</li>
+<li>更快的构建时间</li>
+</ul>
+<p>查找和解析头文件仅仅一次, 储存这些信息在磁盘中, 以便被重复使用, 这样可以提高编译时间</p>
+<h6 id="u6F5C_u5728_u7684_u6A21_u5757_u9677_u9631"><a href="#u6F5C_u5728_u7684_u6A21_u5757_u9677_u9631" class="headerlink" title="潜在的模块陷阱"></a>潜在的模块陷阱</h6><p><img src="/images/15299294689577.jpg" alt=""></p>
+<p><img src="/images/15299294765101.jpg" alt=""></p>
+<p>我们知道他们是同一个 framework, 同样 Clang 能计算出来, 因为你没有指定 framework 的名字, 可能你会得到冲突定义错误, 因为你导入同样的头文件两次 (没有 context 时; 有 context 时, 首先会忽略 context, 我们会观察 <code>cat.h</code> 文件的改变, 所以我们得不到冲突定义 ). Clang 幕后工作非常的辛苦修复这样的问题, 并不能修复所有这样的问题, 所以我们要明确的指定 framework 名字.</p>
+<h3 id="u94FE_u63A5_u5668__28The_Linker_29"><a href="#u94FE_u63A5_u5668__28The_Linker_29" class="headerlink" title="链接器 (The Linker)"></a>链接器 (The Linker)</h3><ul>
+<li>构建可执行Mach-O的最终任务</li>
+<li>将所有编译器调用的输出合并到一个文件中<ul>
+<li>移动和修补编译器生成的代码</li>
+</ul>
+</li>
+<li>采取两种输入文件<ul>
+<li>目标文件（.o）</li>
+<li>库（.dylib，.tbd，.a）</li>
+</ul>
+</li>
+</ul>
+<h3 id="u7B26_u53F7__28Symbols_29"><a href="#u7B26_u53F7__28Symbols_29" class="headerlink" title="符号 (Symbols)"></a>符号 (Symbols)</h3><ul>
+<li>符号是代码或数据片段的名称</li>
+<li>代码片段可能会引用其他符号</li>
+<li>符号可以具有改变链接器行为的属性<ul>
+<li>弱符号</li>
+</ul>
+</li>
+<li>语言通常会将数据编码为符号，使其“符号化”</li>
+</ul>
+<h3 id="u5BF9_u8C61_u6587_u4EF6__28Object_Files_29"><a href="#u5BF9_u8C61_u6587_u4EF6__28Object_Files_29" class="headerlink" title="对象文件 (Object Files)"></a>对象文件 (Object Files)</h3><ul>
+<li>单个编译器操作的输出</li>
+<li>包含代码和数据片段的不可执行的Mach-O文件<ul>
+<li>每个片段由一个符号表示</li>
+<li>片段可能引用“未定义”的符号</li>
+</ul>
+</li>
+</ul>
+<h3 id="u5E93__28Libraries_29"><a href="#u5E93__28Libraries_29" class="headerlink" title="库 (Libraries)"></a>库 (Libraries)</h3><ul>
+<li>库定义了不作为目标的一部分构建的符号</li>
+<li>Dylibs：动态库<ul>
+<li>提供可执行文件可以使用的代码和数据片段的Mach-O文件</li>
+</ul>
+</li>
+<li>TBDs：基于文本的动态库<ul>
+<li>只包含符号</li>
+</ul>
+</li>
+<li>静态存档<ul>
+<li>使用“ar”工具构建的多个.o文件的存档</li>
+<li>只有您引用的符号的.o文件才会包含在您的应用中</li>
+</ul>
+</li>
+</ul>
+<h6 id="u4F8B_u5B50"><a href="#u4F8B_u5B50" class="headerlink" title="例子"></a>例子</h6><p><img src="/images/15299294866696.jpg" alt=""></p>
+<p><img src="/images/15299294973521.jpg" alt=""></p>
+<ol>
+<li><code>.o</code> 字符串被拷贝到 <code>.o</code> 文件中, 之所以没有名字, 是因为它是静态变量</li>
+<li>我们看到有两个变量被传到方法中, 两个地址表示开始和结束位置</li>
+<li><code>__Z9playSoundPKc</code> 表示 方法签名</li>
+<li><code>.o</code> 文件作为 Linker 的输入, Linker 将输出一个文件去放它们 (PetKit)</li>
+<li>数据段 __TEXT: 一部分是可执行代码, 一部分是字符串</li>
+<li>知道 <code>.o</code> 文件的地址, 所以我们可以去重写它</li>
+<li>看下静态方法的实现, 有两个 <code>.o</code> 文件, 将他放入文件中, 第二个没有引用它, 所以不会放入</li>
+<li><code>__open$stub</code> 拷贝的 <code>__open</code>, 此文件在系统库的TBD文件中</li>
+<li>系统库我们是不能拷贝到程序中的, 我们需要放足够的信息以至于能够调用到它</li>
+<li><code>__DATA</code> 全局变量, <code>__open$stub</code> 偏移量为 0 , 设置为 NULL 时, 将会 crash</li>
+<li><code>__LINKEDIT</code> 元数据, 为操作系统留下信息在运行时去修复它</li>
+</ol>
+<h3 id="More_Information"><a href="#More_Information" class="headerlink" title="More Information"></a>More Information</h3><p><a href="https://developer.apple.com/wwdc18/415" target="_blank" rel="external">https://developer.apple.com/wwdc18/415</a></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/06/22/412-advanced-debugging-with-xcode-and-lldb/" class="next">下一篇</a></div><div class="copyright"><p>© 2015 - 2018 <a href="http://yoursite.com">panda</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script></body></html>
